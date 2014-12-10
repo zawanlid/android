@@ -1,0 +1,105 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:stretchColumns="1" 
+        android:id="@+id/signupform">
+
+        <TableRow>
+
+            <TextView android:text="@string/username_label" />
+
+            <EditText
+                android:id="@+id/username"
+                android:ems="10"
+                android:hint="@string/username"
+                android:inputType="text"
+                android:minEms="1" />
+
+           <!--  <requestFocus /> -->
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="@string/email_label" />
+
+            <EditText
+                android:id="@+id/email"
+                android:ems="10"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="@string/password_label" />
+
+            <EditText
+                android:id="@+id/pwd"
+                android:ems="10"
+                android:hint="@string/password"
+                android:inputType="textPassword" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="@string/gender_label" />
+
+            <RadioGroup android:id="@+id/gender" >
+
+                <RadioButton
+                    android:id="@+id/male"
+                    android:checked="true"
+                    android:text="@string/male" />
+
+                <RadioButton
+                    android:id="@+id/female"
+                    android:text="@string/female" />
+            </RadioGroup>
+        </TableRow>
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:onClick="signup"
+            android:text="@string/button_signup" />
+
+        <Button
+            android:id="@+id/start_browser"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/start_browser" />
+
+        <Button
+            android:id="@+id/start_phone"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/start_phone" />
+
+        <Button
+            android:id="@+id/btnStartService"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:onClick="startService"
+            android:text="@string/start_service" />
+
+        <Button
+            android:id="@+id/btnStopService"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:onClick="stopService"
+            android:text="@string/stop_service" />
+    </TableLayout>
+
+    <ListView
+        android:id="@+id/users"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/signupform"
+        android:layout_alignParentTop="true" />
+
+</RelativeLayout>
