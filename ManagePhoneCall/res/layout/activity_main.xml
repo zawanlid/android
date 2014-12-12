@@ -1,0 +1,120 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
+    android:background="#FFFFFF"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip" >
+        
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+        <Button
+            android:id="@+id/manage_phone_call"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:background="@drawable/button"
+            android:text="@string/manage_call_block"
+            android:textColor="#FFFFFF" 
+            
+            android:onClick="managePhoneCall"/>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+         <Button
+            android:id="@+id/scheduled_calls"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:background="@drawable/button"
+            android:text="@string/scheduled_calls"
+            android:textColor="#FFFFFF"
+            android:onClick="scheduledCalls" />
+         
+          <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+          
+             <Button
+            android:id="@+id/manage_auto_answer"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:background="@drawable/button"
+            android:text="@string/manage_auto_answer"
+            android:onClick="manageAutoAnswer"
+            android:textColor="#FFFFFF" />
+            
+          <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+          
+         
+            
+              <Button
+            android:id="@+id/manage_meetings"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:background="@drawable/button"
+            android:text="@string/manage_meetings"
+            android:onClick="manageMeetings"
+            android:textColor="#FFFFFF" />
+            
+             <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+            
+            <Button
+            android:id="@+id/spy_calls"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:background="@drawable/button"
+            android:text="@string/spy_call_history"
+            android:onClick="spyCallHistory"
+            android:textColor="#FFFFFF" />
+
+       
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:background="#006666"
+            android:gravity="center"
+            android:height="40dp"
+            android:text="@string/copy_right"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="64dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

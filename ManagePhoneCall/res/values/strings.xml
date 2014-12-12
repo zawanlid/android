@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Manage Phone Call</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="manage_call_block">Manage Call Block</string>
+    <string name="scheduled_calls">Schdule Calls</string>
+    <string name="manage_meetings">Manage Meetings</string>
+    <string name="manage_auto_answer">Manage Auto Sms Answer</string>
+    <string name="spy_call_history">Spy Call History</string>
+    <string name="title_activity_manage_call">ManageCallActivity</string>
+    <string name="title_activity_scheduled_calls">ScheduledCalls</string>
+    <string name="title_activity_manage_auto_answer">ManageAutoAnswer</string>
+    <string name="title_activity_manage_meetings">ManageMeetings</string>
+    <string name="title_activity_spy_call_history">SpyCallHistory</string>
+    <string name="method_add">Add</string>
+    <string name="copy_right">"@"Copyright to Manage Phone Call</string>
+    <string name="title_activity_add_scheduled_call_list">AddScheduledCallList</string>
+    <string name="scheduled_alert_type">--Select--</string>
+
+    <string-array name="scheduled_alert_type_arrays">
+        <item>Vibrate Only</item>
+        <item>Ring Only</item>
+        <item>Vibrate and Ring</item>
+    </string-array>
+    <string-array name="days_arrays">
+        <item>Today</item>
+        <item>All days</item>
+        <item>week days</item>
+    </string-array>
+
+    <string name="title_activity_add_auto_answer">AddAutoAnswer</string>
+    <string name="title_activity_addmanage_meetings">AddmanageMeetings</string>
+    <string name="title_activity_spy_call_history_log">SpyCallHistoryLog</string>
+    <string name="title_select">Choose File</string>
+    
+
+</resources>
