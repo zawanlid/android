@@ -14,8 +14,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ User.TABLE_NAME + " (" + User._ID + " INTEGER PRIMARY KEY,"
 			+ User.COLUMN_USER_NAME + TEXT_TYPE + COMMA_SEP
 			+ User.COLUMN_EMAIL + TEXT_TYPE  + COMMA_SEP 
-			+ User.COLUMN_PASSWORD + TEXT_TYPE
-			+ User.COLUMN_Gender + TEXT_TYPE  +
+			+ User.COLUMN_PASSWORD + TEXT_TYPE + COMMA_SEP 
+			+ User.COLUMN_GENDER + TEXT_TYPE  +
 			" )";
 
 	private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "

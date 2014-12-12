@@ -1,13 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
     <TableLayout
+        android:id="@+id/signupform"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:stretchColumns="1" 
-        android:id="@+id/signupform">
+        android:stretchColumns="1" >
 
         <TableRow>
 
@@ -20,7 +21,7 @@
                 android:inputType="text"
                 android:minEms="1" />
 
-           <!--  <requestFocus /> -->
+            <!-- <requestFocus /> -->
         </TableRow>
 
         <TableRow>

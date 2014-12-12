@@ -8,18 +8,23 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.app.R;
@@ -38,7 +43,7 @@ public class MainActivity extends Activity {
 
 	SignUp signup = new SignUp();
 	List<SignUp> signupList = new ArrayList<SignUp>();
-	ArrayAdapter<SignUp> adapter = null;
+	SignupAdapter adapter = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,17 +53,25 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		ListView list = (ListView) findViewById(R.id.users);
-		adapter = new ArrayAdapter<SignUp>(this,
-				android.R.layout.simple_list_item_1, signupList);
+		adapter = new SignupAdapter();
 		list.setAdapter(adapter);
 
-		SignUp signUpOb = new SignUp();
-		signUpOb.setUsername("dnawaz");
-		adapter.add(signUpOb);
-		signUpOb = new SignUp();
-		signUpOb.setUsername("androiduser");
-		adapter.add(signUpOb);
-		
+		SQLiteDatabase db = mDbHelper.getWritableDatabase();
+		Cursor c = db.rawQuery("select " + User.COLUMN_USER_NAME + ","
+				+ User.COLUMN_EMAIL + "," + User.COLUMN_GENDER + " from "
+				+ User.TABLE_NAME, null);
+
+		SignUp signUpOb = null;
+		while (c.moveToNext()) {
+			signUpOb = new SignUp();
+			signUpOb.setUsername(c.getString(0));
+			signUpOb.setEmail(c.getString(1));
+			signUpOb.setGender(c.getString(2));
+			adapter.add(signUpOb);
+		}
+		c.close();
+		db.close();
+
 		// implicit and explicit intents
 		Button startBrowser = (Button) findViewById(R.id.start_browser);
 		startBrowser.setOnClickListener(new View.OnClickListener() {
@@ -191,7 +204,7 @@ public class MainActivity extends Activity {
 				values.put(User.COLUMN_USER_NAME, signup.getUsername());
 				values.put(User.COLUMN_EMAIL, signup.getEmail());
 				values.put(User.COLUMN_PASSWORD, signup.getPwd());
-				values.put(User.COLUMN_Gender, signup.getGender());
+				values.put(User.COLUMN_GENDER, signup.getGender());
 
 				// Insert the new row, returning the primary key value of the
 				// new row
@@ -234,4 +247,56 @@ public class MainActivity extends Activity {
 				android.provider.Settings.ACTION_SETTINGS), 0);
 	}
 
+	class SignupAdapter extends ArrayAdapter<SignUp> {
+
+		SignupAdapter() {
+			super(MainActivity.this, android.R.layout.simple_list_item_1,
+					signupList);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
+		 */
+		@Override
+		public View getView(int position, View _view, ViewGroup parent) {
+			View rowView = _view;
+			SignupHolder holder = null;
+			if (rowView == null) {
+				LayoutInflater inflater = getLayoutInflater();
+				rowView = inflater.inflate(R.layout.row, parent, false);
+				holder = new SignupHolder(rowView);
+				rowView.setTag(holder);
+			} else {
+				holder = (SignupHolder) rowView.getTag();
+			}
+			holder.populateFrom(signupList.get(position));
+			return (rowView);
+		}
+	}
+
+	static class SignupHolder {
+		private TextView username = null;
+		private TextView email = null;
+		private ImageView genderIcon = null;
+		private View row = null;
+
+		SignupHolder(View _rowView) {
+			row = _rowView;
+			username = (TextView) row.findViewById(R.id.title);
+			email = (TextView) row.findViewById(R.id.description);
+			genderIcon = (ImageView) row.findViewById(R.id.icon);
+		}
+
+		void populateFrom(SignUp r) {
+			username.setText(r.getUsername());
+			username.setTextColor(Color.RED);
+			email.setText(r.getEmail());
+			if (r.getGender().equals(Constants.GENDER_MALE)) {
+				genderIcon.setImageResource(R.drawable.ic_launcher);
+			} else if (r.getGender().equals(Constants.GENDER_FEMALE)) {
+				genderIcon.setImageResource(R.drawable.my_app_launcher);
+			}
+		}
+	}
 }
