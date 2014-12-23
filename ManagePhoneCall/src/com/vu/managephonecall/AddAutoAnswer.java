@@ -27,6 +27,7 @@ public class AddAutoAnswer extends Activity {
 		
 	}
 	
+	@Deprecated
 	public void selectFile(View view){
 		Intent intent=new Intent(getApplicationContext(), AndroidExplorer.class);
 		startActivity(intent);

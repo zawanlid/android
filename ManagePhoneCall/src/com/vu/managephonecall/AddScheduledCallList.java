@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -14,7 +15,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -22,7 +22,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.vu.managephonecall.database.SchcheduledCallListDao;
-import com.vu.managephonecall.receivers.AlarmReciever;
+import com.vu.managephonecall.receivers.AlarmReceiver;
 
 @SuppressLint("SimpleDateFormat")
 public class AddScheduledCallList extends Activity {
@@ -30,82 +30,78 @@ public class AddScheduledCallList extends Activity {
 	private EditText phonenumberEditText;
 	private EditText descriptionEditText;
 	private EditText dateTimeeditText;
-	//private Spinner alertTypeSpinner;
+	// private Spinner alertTypeSpinner;
 	SchcheduledCallListDao schcheduledCallListDao;
-	private com.vu.managephonecall.CustomDateTimePicker datetimePicket;
+	private com.vu.managephonecall.CustomDateTimePicker datetimePicker;
 	private Button shceduleButton;
 
+	private static Logger log = Logger.getLogger(AddScheduledCallList.class.getName());
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		log.info("Processing onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_scheduled_call_list);
-		
-		phonenumberEditText=(EditText)findViewById(R.id.phone_number);
-		descriptionEditText=(EditText)findViewById(R.id.description);
-		dateTimeeditText=(EditText)findViewById(R.id.date_time);
+
+		phonenumberEditText = (EditText) findViewById(R.id.phone_number);
+		descriptionEditText = (EditText) findViewById(R.id.description);
+		dateTimeeditText = (EditText) findViewById(R.id.date_time);
 		dateTimeeditText.setInputType(InputType.TYPE_NULL);
-		shceduleButton=(Button)findViewById(R.id.schedule_time);
+		shceduleButton = (Button) findViewById(R.id.schedule_time);
 		customDate();
-		 schcheduledCallListDao=new SchcheduledCallListDao(getApplicationContext());
-		 
-		 shceduleButton.setOnClickListener(new OnClickListener() {
-			
+		schcheduledCallListDao = new SchcheduledCallListDao(
+				getApplicationContext());
+
+		shceduleButton.setOnClickListener(new OnClickListener() {
+
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				datetimePicket.showDialog();
-				
+				datetimePicker.showDialog();
+
 			}
 		});
-		 
-		 
-		
-	}
-	@SuppressLint("SimpleDateFormat")
-	public void saveScheduledCall(View view){
-		
-		try {
-			
-			String currentTime=new SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(new Date());
-			
-			SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-			
-		
-			
-			String schedleTime=dateTimeeditText.getText().toString();
-			
-			Date date1=simpleDateFormat.parse(currentTime);
-			Date date2=simpleDateFormat.parse(schedleTime);
-			
-			
-			
-			
-			
-			
-			Long time = date2.getTime()-date1.getTime();
-			Log.d("DATE", ""+time);
-			Intent intentAlarm = new Intent(this, AlarmReciever.class);
-			AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-			alarmManager.set(AlarmManager.RTC_WAKEUP,time, PendingIntent.getBroadcast(this,1,  intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
-			Toast.makeText(this, "Alarm Scheduled for Tommrrow", Toast.LENGTH_LONG).show();
-				
-			if(schcheduledCallListDao.savescheduledPhonenumber(phonenumberEditText.getText().toString(), descriptionEditText.getText().toString(),
-					dateTimeeditText.getText().toString())){
-				
-			Toast.makeText(getApplicationContext(), "Successfully Inserted", Toast.LENGTH_SHORT).show();	
-			}else{
 
-				Toast.makeText(getApplicationContext(), "Insertion Failed", Toast.LENGTH_SHORT).show();
+	}
+
+	@SuppressLint("SimpleDateFormat")
+	public void saveScheduledCall(View view) {
+
+		try {
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+					"yyyy-MM-dd HH:mm:SS");
+			String schedleTimeStr = dateTimeeditText.getText().toString();
+			Date scheduleTime = simpleDateFormat.parse(schedleTimeStr);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(scheduleTime);
+			calendar.set(Calendar.SECOND, 0);
+			scheduleTime = calendar.getTime(); 
+			schedleTimeStr = scheduleTime.toString();
+			Intent intentAlarm = new Intent(this, AlarmReceiver.class);
+			intentAlarm.putExtra("com.vu.managephonecall.notification.call", descriptionEditText.getText().toString());
+			AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+			alarmManager.set(AlarmManager.RTC_WAKEUP, scheduleTime.getTime(), PendingIntent
+					.getBroadcast(this,1,  intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+
+			if (schcheduledCallListDao.savescheduledPhonenumber(
+					phonenumberEditText.getText().toString(),
+					descriptionEditText.getText().toString(), simpleDateFormat.format(calendar.getTime()))) {
+
+				Toast.makeText(getApplicationContext(),
+						"Successfully Inserted", Toast.LENGTH_SHORT).show();
+			} else {
+
+				Toast.makeText(getApplicationContext(), "Insertion Failed",
+						Toast.LENGTH_SHORT).show();
 			}
 			finish();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	public void customDate(){
-		datetimePicket = new CustomDateTimePicker(this,
+
+	public void customDate() {
+		datetimePicker = new CustomDateTimePicker(this,
 				new CustomDateTimePicker.ICustomDateTimeListener() {
 
 					private String hourString;
@@ -121,48 +117,44 @@ public class AddScheduledCallList extends Activity {
 							String weekDayFullName, String weekDayShortName,
 							int hour24, int hour12, int min, int sec,
 							String AM_PM) {
-						
-						 if(String.valueOf(hour24).length()==1){
-						    	hourString="0"+hour24;
-						    }else{
-						    	hourString=String.valueOf(hour24);
-						    }
-						    if(String.valueOf(min).length()==1){
-						    	minString="0"+min;
-						    }else{
-						    	minString=String.valueOf(min);
-						    }
-						    if(String.valueOf(sec).length()==1){
-						    	secString="0"+sec;
-						    }else{
-						    	secString=String.valueOf(sec);
-						    }
-						    if(String.valueOf(monthNumber).length()==1){
-						    	
-						    	if(monthNumber==9){
-						    		monthNumberString=String.valueOf(monthNumber+1);
-						    	}else{
-						    		monthNumberString="0"+(monthNumber+1);	
-						    	}
-						    	
-						    }else{
-						    	monthNumberString=String.valueOf(monthNumber+1);
-						    }
-						    if(String.valueOf(date).length()==1){
-						    	day="0"+date;
-						    }else{
-						    	day=String.valueOf(date);
-						    	
-						    }
-						    dateTimeeditText
-							.setText(  year+ "-" + monthNumberString + "-" +day+"   "+ hourString + ":" + minString+":"+secString);
-						
-						
-									
-									
-									
-										
-										
+
+						if (String.valueOf(hour24).length() == 1) {
+							hourString = "0" + hour24;
+						} else {
+							hourString = String.valueOf(hour24);
+						}
+						if (String.valueOf(min).length() == 1) {
+							minString = "0" + min;
+						} else {
+							minString = String.valueOf(min);
+						}
+						if (String.valueOf(sec).length() == 1) {
+							secString = "0" + sec;
+						} else {
+							secString = String.valueOf(sec);
+						}
+						if (String.valueOf(monthNumber).length() == 1) {
+
+							if (monthNumber == 9) {
+								monthNumberString = String
+										.valueOf(monthNumber + 1);
+							} else {
+								monthNumberString = "0" + (monthNumber + 1);
+							}
+
+						} else {
+							monthNumberString = String.valueOf(monthNumber + 1);
+						}
+						if (String.valueOf(date).length() == 1) {
+							day = "0" + date;
+						} else {
+							day = String.valueOf(date);
+
+						}
+						dateTimeeditText.setText(year + "-" + monthNumberString
+								+ "-" + day + "   " + hourString + ":"
+								+ minString + ":" + secString);
+
 					}
 
 					@Override
@@ -174,12 +166,12 @@ public class AddScheduledCallList extends Activity {
 		 * Pass Directly current time format it will return AM and PM if you set
 		 * false
 		 */
-		datetimePicket.set24HourFormat(false);
+		datetimePicker.set24HourFormat(false);
 		/**
 		 * Pass Directly current data and time to show when it pop up
 		 */
-		datetimePicket.setDate(Calendar.getInstance());
+		datetimePicker.setDate(Calendar.getInstance());
 
 	}
-	
+
 }

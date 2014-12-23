@@ -1,7 +1,5 @@
 package com.vu.managephonecall.receivers;
 
-import com.vu.managephonecall.R;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,20 +9,22 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 
-public class AlarmReciever extends BroadcastReceiver {
+import com.vu.managephonecall.R;
 
+public class AlarmReceiver extends BroadcastReceiver {
+
+	@SuppressWarnings("unused")
 	private NotificationManager NM;
 
-	
 	@Override
-	public void onReceive(Context context, Intent arg1) {
+	public void onReceive(Context context, Intent intentArg) {
 
 		// define sound URI, the sound to be played when there's a notification
 		Uri soundUri = RingtoneManager
 				.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
 		// intent triggered, you can add other intent for other actions
-		Intent intent = new Intent(context, AlarmReciever.class);
+		Intent intent = new Intent(context, AlarmReceiver.class);
 		PendingIntent pIntent = PendingIntent
 				.getActivity(context, 0, intent, 0);
 
@@ -33,15 +33,10 @@ public class AlarmReciever extends BroadcastReceiver {
 		// first param to 0
 		Notification mNotification = new Notification.Builder(context)
 
-		.setContentTitle("New Post!")
-				.setContentText("Here's an awesome update for you!")
+		.setContentTitle("Scheduled Call!")
+				.setContentText(intentArg.getStringExtra("com.vu.managephonecall.notification.call"))
 				.setSmallIcon(R.drawable.ninja).setContentIntent(pIntent)
 				.setSound(soundUri)
-
-				.addAction(R.drawable.ninja, "View", pIntent)
-
-				.addAction(0, "Remind", pIntent)
-
 				.build();
 
 		NotificationManager notificationManager = (NotificationManager) context

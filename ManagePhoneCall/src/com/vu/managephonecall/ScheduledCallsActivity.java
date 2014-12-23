@@ -1,22 +1,29 @@
 package com.vu.managephonecall;
 
-import com.vu.managephonecall.database.SchcheduledCallListDao;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
+import com.vu.managephonecall.database.SchcheduledCallListDao;
+import com.vu.managephonecall.receivers.AlarmReceiver;
 
 public class ScheduledCallsActivity extends Activity {
 	String[] countryArray = { "No records" };
@@ -81,6 +88,7 @@ public class ScheduledCallsActivity extends Activity {
 		scheduledList();
 	}
 
+	@SuppressLint("SimpleDateFormat")
 	public void alert(String PhoneNumbervalue) {
 		final String previousValue=PhoneNumbervalue;
 		String[] values=schcheduledCallListDao.getEditPhoneNumberDetails(PhoneNumbervalue);
@@ -109,17 +117,43 @@ public class ScheduledCallsActivity extends Activity {
 		alert.setPositiveButton("Update",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
-						if(schcheduledCallListDao.update(previousValue, phoneNumber.getText().toString(),
-								description.getText().toString(), dateandtime.getText().toString())){
-							Toast.makeText(getApplicationContext(), "Updated successfully", Toast.LENGTH_LONG);
+						SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+								"yyyy-MM-dd HH:mm:ss");
+						String schedleTimeStr = dateandtime.getText().toString();
+						Date scheduleTime = null;
+						boolean validRequest = false;
+						try {
+							scheduleTime = simpleDateFormat.parse(schedleTimeStr);
+							validRequest = true;
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+						if (!validRequest) {
+							Toast.makeText(getApplicationContext(), "Invalid date entered.\nValid date format is (YYYY-MM-DD HH:MM:SS)", Toast.LENGTH_LONG).show();
+						} else {
+						Calendar calendar = Calendar.getInstance();
+						calendar.setTime(scheduleTime);
+						calendar.set(Calendar.SECOND, 0);
+						scheduleTime = calendar.getTime(); 
+						schedleTimeStr = scheduleTime.toString();
+						boolean result = schcheduledCallListDao.update(previousValue, phoneNumber.getText().toString(),
+								description.getText().toString(), simpleDateFormat.format(calendar.getTime()));
+						
+						if(result){
+							Toast.makeText(getApplicationContext(), "Updated successfully", Toast.LENGTH_LONG).show();
+							Intent intentAlarm = new Intent(getApplicationContext(), AlarmReceiver.class);
+							intentAlarm.putExtra("com.vu.managephonecall.notification.call", description.getText().toString());
+							AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+							alarmManager.set(AlarmManager.RTC_WAKEUP, scheduleTime.getTime(), PendingIntent
+									.getBroadcast(getApplicationContext(),1,  intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
 							scheduledList();
 							
 						}else{
-							Toast.makeText(getApplicationContext(), "Update Fail", Toast.LENGTH_LONG);
+							Toast.makeText(getApplicationContext(), "Update Fail", Toast.LENGTH_LONG).show();
 										
 						}
 						
-					}
+					}}
 
 				});
 
@@ -129,11 +163,11 @@ public class ScheduledCallsActivity extends Activity {
 						
 						
 						if(schcheduledCallListDao.delete(previousValue)){
-							Toast.makeText(getApplicationContext(), "Delete successfully", Toast.LENGTH_LONG);
+							Toast.makeText(getApplicationContext(), "Delete successfully", Toast.LENGTH_LONG).show();
 							scheduledList();
 							
 						}else{
-							Toast.makeText(getApplicationContext(), "Delete Failed", Toast.LENGTH_LONG);
+							Toast.makeText(getApplicationContext(), "Delete Failed", Toast.LENGTH_LONG).show();
 											
 						}
 					}

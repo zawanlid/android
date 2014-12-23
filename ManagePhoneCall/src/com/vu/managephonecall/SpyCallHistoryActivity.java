@@ -28,7 +28,7 @@ public class SpyCallHistoryActivity extends Activity {
 		Toast.makeText(getApplicationContext(), "Please enter all values", Toast.LENGTH_SHORT).show();
 	}else{
 		
-		if(userName.getText().toString().equals("ADMIN")||password.getText().toString().equals("ADMIN")){
+		if(userName.getText().toString().equalsIgnoreCase("ADMIN")||password.getText().toString().equalsIgnoreCase("ADMIN")){
 			Intent intent=new Intent(getApplicationContext(), SpyCallHistoryLog.class);
 			startActivity(intent);	
 		}else{

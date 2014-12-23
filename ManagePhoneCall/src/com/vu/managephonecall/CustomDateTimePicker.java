@@ -90,12 +90,14 @@ public class CustomDateTimePicker implements OnClickListener {
 		btn_setDate.setText("Set Time");
 		btn_setDate.setId(SET_DATE);
 		btn_setDate.setOnClickListener(this);
+		btn_setDate.setEnabled(true);
 
 		btn_setTime = new Button(activity);
 		btn_setTime.setLayoutParams(button_params);
 		btn_setTime.setText("Set Date");
 		btn_setTime.setId(SET_TIME);
 		btn_setTime.setOnClickListener(this);
+		btn_setTime.setEnabled(false);
 
 		linear_top.addView(btn_setDate);
 		linear_top.addView(btn_setTime);
@@ -253,14 +255,14 @@ public class CustomDateTimePicker implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case SET_DATE:
-			btn_setTime.setEnabled(false);
+			btn_setTime.setEnabled(true);
 			btn_setDate.setEnabled(true);
 			viewSwitcher.showNext();
 			break;
 
 		case SET_TIME:
 			btn_setTime.setEnabled(true);
-			btn_setDate.setEnabled(false);
+			btn_setDate.setEnabled(true);
 			viewSwitcher.showPrevious();
 			break;
 

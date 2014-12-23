@@ -1,8 +1,5 @@
 package com.vu.managephonecall.database;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -86,8 +83,6 @@ public class ManageCallBlockDao {
 
 	public String[] getListOfBlockPhoneNumbers() {
 		String[] blockPhoneNumbers = null;
-		List<String> portValus = new ArrayList<String>();
-
 		Log.d("CHECK", "" + "FINE");
 		database = helper.getWritableDatabase();
 		Cursor cursor = database.rawQuery("select * from " + TABLE_NAME, null);

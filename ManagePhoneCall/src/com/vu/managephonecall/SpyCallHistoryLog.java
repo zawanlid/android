@@ -1,14 +1,5 @@
 package com.vu.managephonecall;
 
-import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
 import java.util.Date;
 
 import android.app.Activity;
@@ -31,21 +22,21 @@ public class SpyCallHistoryLog extends Activity {
 
 	private void getCallDetails() {
 		StringBuffer sb = new StringBuffer();
-		@SuppressWarnings("deprecation")
-		Cursor managedCursor = managedQuery(CallLog.Calls.CONTENT_URI, null,
-				null, null, null);
-		int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
-		int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
-		int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
-		int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
+		
+		Cursor cursor = this.getContentResolver().query(CallLog.Calls.CONTENT_URI,
+	            null, null, null, CallLog.Calls.DATE + " DESC");
+		int number = cursor.getColumnIndex(CallLog.Calls.NUMBER);
+		int type = cursor.getColumnIndex(CallLog.Calls.TYPE);
+		int date = cursor.getColumnIndex(CallLog.Calls.DATE);
+		int duration = cursor.getColumnIndex(CallLog.Calls.DURATION);
 		sb.append("Call Log :");
-		managedCursor.moveToLast();
-		while (managedCursor.moveToPrevious()) {
-			String phNumber = managedCursor.getString(number);
-			String callType = managedCursor.getString(type);
-			String callDate = managedCursor.getString(date);
+		int counter = 1;
+		while (cursor.moveToNext()) {
+			String phNumber = cursor.getString(number);
+			String callType = cursor.getString(type);
+			String callDate = cursor.getString(date);
 			Date callDayTime = new Date(Long.valueOf(callDate));
-			String callDuration = managedCursor.getString(duration);
+			String callDuration = cursor.getString(duration);
 			String dir = null;
 			int dircode = Integer.parseInt(callType);
 			switch (dircode) {
@@ -63,8 +54,13 @@ public class SpyCallHistoryLog extends Activity {
 					+ dir + " \nCall Date:" + callDayTime
 					+ " \nCall duration in sec :" + callDuration);
 			sb.append("\n----------------------------------");
-			 textView.setText(sb);
-		} // managedCursor.close(); textView.setText(sb); }
+			if (counter == 100)
+				break;
+			else
+				counter++;
+		} 
 
+		cursor.close();
+		textView.setText(sb);
 	}
 }

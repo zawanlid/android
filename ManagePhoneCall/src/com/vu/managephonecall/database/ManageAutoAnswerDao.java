@@ -72,13 +72,11 @@ public class ManageAutoAnswerDao {
 			blockPhoneNumbers = new String[3];
 
 			if (cursor.moveToFirst()) {
-				int i = 0;
 				do {
 					blockPhoneNumbers[0] = cursor.getString(1);
 					blockPhoneNumbers[1] = cursor.getString(2);
 					blockPhoneNumbers[2] = cursor.getString(3);
 					Log.d("phone number", cursor.getString(3));
-					i++;
 				} while (cursor.moveToNext());
 			}
 			cursor.close();
@@ -157,11 +155,9 @@ public class ManageAutoAnswerDao {
 		if (cursor != null && cursor.getCount() > 0) {
 			
 			if (cursor.moveToFirst()) {
-				int i = 0;
 				do {
 				  msgBody= cursor.getString(3);
 					Log.d("Msg Body", cursor.getString(3));
-					i++;
 				} while (cursor.moveToNext());
 			}
 			cursor.close();
