@@ -1,9 +1,14 @@
 package com.vu.managephonecall;
 
+import static com.vu.managephonecall.util.GlobalManagePhoneCall.validate;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -22,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.vu.managephonecall.database.SchcheduledCallListDao;
 import com.vu.managephonecall.receivers.AlarmReceiver;
 
@@ -40,7 +46,6 @@ public class ScheduledCallsActivity extends Activity {
 	}
 
 	private void scheduledList() {
-		
 
 		String[] numbers = schcheduledCallListDao
 				.getListOfScheduledPhoneNumbers();
@@ -65,7 +70,10 @@ public class ScheduledCallsActivity extends Activity {
 
 				TextView textView = (TextView) view;
 
-				alert(textView.getText().toString());
+				if (!"No records".equalsIgnoreCase(textView.getText()
+						.toString())) {
+					alert(textView.getText().toString());
+				}
 
 			}
 		});
@@ -90,92 +98,128 @@ public class ScheduledCallsActivity extends Activity {
 
 	@SuppressLint("SimpleDateFormat")
 	public void alert(String PhoneNumbervalue) {
-		final String previousValue=PhoneNumbervalue;
-		String[] values=schcheduledCallListDao.getEditPhoneNumberDetails(PhoneNumbervalue);
+		final String previousValue = PhoneNumbervalue;
+		String[] values = schcheduledCallListDao
+				.getEditPhoneNumberDetails(PhoneNumbervalue);
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
 		// alert.setMessage("Phone Number");
 
 		// Set an EditText view to get user input
 		final EditText phoneNumber = new EditText(this);
-      phoneNumber.setText(values[2]);
-      
+		phoneNumber.setText(values[2]);
+
 		final EditText description = new EditText(this);
-        description.setText(values[0]);
-        
+		description.setText(values[0]);
+
 		final EditText dateandtime = new EditText(this);
 		dateandtime.setText(values[1]);
-		 LinearLayout layout = new LinearLayout(getApplicationContext());
-	        layout.setOrientation(LinearLayout.VERTICAL);
-	        layout.addView(phoneNumber);
-	        layout.addView(description);
-	        layout.addView(dateandtime);
+		LinearLayout layout = new LinearLayout(getApplicationContext());
+		layout.setOrientation(LinearLayout.VERTICAL);
+		layout.addView(phoneNumber);
+		layout.addView(description);
+		layout.addView(dateandtime);
 
-		
 		alert.setView(layout);
 
 		alert.setPositiveButton("Update",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
+						
+						
 						SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
 								"yyyy-MM-dd HH:mm:ss");
-						String schedleTimeStr = dateandtime.getText().toString();
+						String schedleTimeStr = dateandtime.getText()
+								.toString().trim();
+						if (schedleTimeStr.length() > 19) {
+							schedleTimeStr = schedleTimeStr.substring(0, 19);
+						}
 						Date scheduleTime = null;
 						boolean validRequest = false;
 						try {
-							scheduleTime = simpleDateFormat.parse(schedleTimeStr);
+							scheduleTime = simpleDateFormat
+									.parse(schedleTimeStr);
 							validRequest = true;
 						} catch (ParseException e) {
+							Toast.makeText(
+									getApplicationContext(),
+									"Invalid date entered.\nValid date format is (YYYY-MM-DD HH:MM:SS)",
+									Toast.LENGTH_LONG).show();
 							e.printStackTrace();
 						}
-						if (!validRequest) {
-							Toast.makeText(getApplicationContext(), "Invalid date entered.\nValid date format is (YYYY-MM-DD HH:MM:SS)", Toast.LENGTH_LONG).show();
-						} else {
-						Calendar calendar = Calendar.getInstance();
-						calendar.setTime(scheduleTime);
-						calendar.set(Calendar.SECOND, 0);
-						scheduleTime = calendar.getTime(); 
-						schedleTimeStr = scheduleTime.toString();
-						boolean result = schcheduledCallListDao.update(previousValue, phoneNumber.getText().toString(),
-								description.getText().toString(), simpleDateFormat.format(calendar.getTime()));
 						
-						if(result){
-							Toast.makeText(getApplicationContext(), "Updated successfully", Toast.LENGTH_LONG).show();
-							Intent intentAlarm = new Intent(getApplicationContext(), AlarmReceiver.class);
-							intentAlarm.putExtra("com.vu.managephonecall.notification.call", description.getText().toString());
-							AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-							alarmManager.set(AlarmManager.RTC_WAKEUP, scheduleTime.getTime(), PendingIntent
-									.getBroadcast(getApplicationContext(),1,  intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
-							scheduledList();
-							
-						}else{
-							Toast.makeText(getApplicationContext(), "Update Fail", Toast.LENGTH_LONG).show();
-										
+						Map<String,String> map = new HashMap<String,String>();
+						map.put("Description", description.getText().toString());
+						map.put("Phone Number", phoneNumber.getText().toString());
+						validRequest = validate(getApplicationContext(), map);
+						
+						if (validRequest){
+							Calendar calendar = Calendar.getInstance();
+							calendar.setTime(scheduleTime);
+							calendar.set(Calendar.SECOND, 0);
+							scheduleTime = calendar.getTime();
+							schedleTimeStr = scheduleTime.toString();
+							boolean result = schcheduledCallListDao.update(
+									previousValue, phoneNumber.getText()
+											.toString(), description.getText()
+											.toString(), simpleDateFormat
+											.format(calendar.getTime()));
+
+							if (result) {
+								Toast.makeText(getApplicationContext(),
+										"Updated successfully",
+										Toast.LENGTH_LONG).show();
+								Intent intentAlarm = new Intent(
+										getApplicationContext(),
+										AlarmReceiver.class);
+								intentAlarm
+										.putExtra(
+												"com.vu.managephonecall.notification.call",
+												description.getText()
+														.toString());
+								AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+								alarmManager.set(
+										AlarmManager.RTC_WAKEUP,
+										scheduleTime.getTime(),
+										PendingIntent
+												.getBroadcast(
+														getApplicationContext(),
+														1,
+														intentAlarm,
+														PendingIntent.FLAG_UPDATE_CURRENT));
+								scheduledList();
+
+							} else {
+								Toast.makeText(getApplicationContext(),
+										"Update Fail", Toast.LENGTH_LONG)
+										.show();
+
+							}
+
 						}
-						
-					}}
+					}
 
 				});
 
 		alert.setNegativeButton("Delete",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
-						
-						
-						if(schcheduledCallListDao.delete(previousValue)){
-							Toast.makeText(getApplicationContext(), "Delete successfully", Toast.LENGTH_LONG).show();
+
+						if (schcheduledCallListDao.delete(previousValue)) {
+							Toast.makeText(getApplicationContext(),
+									"Delete successfully", Toast.LENGTH_LONG)
+									.show();
 							scheduledList();
-							
-						}else{
-							Toast.makeText(getApplicationContext(), "Delete Failed", Toast.LENGTH_LONG).show();
-											
+
+						} else {
+							Toast.makeText(getApplicationContext(),
+									"Delete Failed", Toast.LENGTH_LONG).show();
+
 						}
 					}
 				});
 
 		alert.show();
 	}
-	
-	
 
 }

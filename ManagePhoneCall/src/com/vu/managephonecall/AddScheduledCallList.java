@@ -1,9 +1,13 @@
 package com.vu.managephonecall;
 
+import static com.vu.managephonecall.util.GlobalManagePhoneCall.validate;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import android.annotation.SuppressLint;
@@ -76,6 +80,13 @@ public class AddScheduledCallList extends Activity {
 			calendar.set(Calendar.SECOND, 0);
 			scheduleTime = calendar.getTime(); 
 			schedleTimeStr = scheduleTime.toString();
+			
+			Map<String,String> map = new HashMap<String,String>();
+			map.put("Description", descriptionEditText.getText().toString());
+			map.put("Phone Number", phonenumberEditText.getText().toString());
+			boolean validate = validate(getApplicationContext(), map);
+			
+			if (validate) {
 			Intent intentAlarm = new Intent(this, AlarmReceiver.class);
 			intentAlarm.putExtra("com.vu.managephonecall.notification.call", descriptionEditText.getText().toString());
 			AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -94,6 +105,7 @@ public class AddScheduledCallList extends Activity {
 						Toast.LENGTH_SHORT).show();
 			}
 			finish();
+			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

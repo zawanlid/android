@@ -29,7 +29,7 @@ public class ManageMeetingsDao {
 	public static final String TABLE_CREATE = "create table " + TABLE_NAME
 			+ "(" + COLUMN_ID + " integer primary key autoincrement, "
 			+ COLUMN_DESCRIPTION+ " text," + COLUMN_START_TIME + " text, "+ COLUMN_END_TIME + " text, " 
-			 + COLUMN_DAYS + "  text);";
+			 + COLUMN_DAYS + "  text, "+ COLUMN_AUTO_ANSWER + "  text);";
 
 	private SQLiteDatabase database;
 	private SQLiteOpenHelper helper;
@@ -40,7 +40,7 @@ public class ManageMeetingsDao {
 	}
 
 	public boolean savesMeetings(String descrption,
-			String startTime, String endtime,String days) {
+			String startTime, String endtime,String days,String autoAnswer) {
 
 		database = helper.getWritableDatabase();
 
@@ -52,6 +52,7 @@ public class ManageMeetingsDao {
 				contentValues.put(COLUMN_START_TIME, startTime);
 				contentValues.put(COLUMN_END_TIME, endtime);
 				contentValues.put(COLUMN_DAYS, days);
+				contentValues.put(COLUMN_AUTO_ANSWER, autoAnswer);
 				
 				
 				long effectedrows = database.insert(TABLE_NAME, null,
@@ -67,7 +68,7 @@ public class ManageMeetingsDao {
 		}
 		return true;
 	}
-	public String[] getEditPhoneNumberDetails(String title) {
+	public String[] getEditDetails(String title) {
 		String[] blockPhoneNumbers = null;
 
 		Log.d("CHECK", "" + "FINE");
@@ -77,15 +78,17 @@ public class ManageMeetingsDao {
 		Log.d("CUSRSOR SIZE", "" + cursor.getCount());
 
 		if (cursor != null && cursor.getCount() > 0) {
-			blockPhoneNumbers = new String[3];
+			blockPhoneNumbers = new String[5];
 
 			if (cursor.moveToFirst()) {
 				do {
 					blockPhoneNumbers[0] = cursor.getString(1);
 					blockPhoneNumbers[1] = cursor.getString(2);
 					blockPhoneNumbers[2] = cursor.getString(3);
+					blockPhoneNumbers[3] = cursor.getString(4);
+					blockPhoneNumbers[4] = cursor.getString(5);
 					
-					Log.d("phone number", cursor.getString(3));
+					Log.d(" Manage Meeting: ", cursor.getString(3));
 				} while (cursor.moveToNext());
 			}
 			cursor.close();
@@ -94,16 +97,16 @@ public class ManageMeetingsDao {
 		return blockPhoneNumbers;
 	}
 	public boolean update(String previousDescription,String description,String startDate,String endDate,String days,String autoAnswer) {
-		Log.d("TAG UPDATE", previousDescription);
+		Log.d("TAG UPDATE - Decsription :", previousDescription);
+		Log.d("TAG UPDATE - Days :", days);
+		Log.d("TAG UPDATE - AutoAnswer :", autoAnswer);
 		database = helper.getWritableDatabase();
 
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(COLUMN_DESCRIPTION, description);
 		contentValues.put(COLUMN_START_TIME, startDate);
-		contentValues.put(COLUMN_END_TIME, endDate);
-		
-		contentValues.put(COLUMN_DAYS, days);
-		
+		contentValues.put(COLUMN_END_TIME, endDate);		
+		contentValues.put(COLUMN_DAYS, days);		
 		contentValues.put(COLUMN_AUTO_ANSWER, autoAnswer);
 		
 		long effectedrows = database.update(TABLE_NAME, contentValues,
@@ -202,6 +205,33 @@ public class ManageMeetingsDao {
 				do {
 					day=cursor.getString(4);
 					Log.d("Day", day);
+				
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			database.close();
+		}
+		return day;
+	}
+	public String getCallBackMsgID(String startDate ,String endDate) {
+		String day=null;
+		String sdate=startDate.substring(0, startDate.length()-2);
+
+		String edate=endDate.substring(0, endDate.length()-2);
+		
+		database = helper.getWritableDatabase();
+		Cursor cursor = database.rawQuery("select * from "+ TABLE_NAME +" where "+ COLUMN_START_TIME+"=?"+ "AND " +COLUMN_END_TIME+"=?", new String[]{sdate,edate});
+
+		Log.d("CUSRSOR SIZE", "" + cursor.getCount());
+
+		if (cursor != null && cursor.getCount() > 0) {
+			
+
+			if (cursor.moveToFirst()) {
+			
+				do {
+					day=cursor.getString(5);
+					Log.d("Msg ID: ", day);
 				
 				} while (cursor.moveToNext());
 			}

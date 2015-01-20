@@ -12,7 +12,7 @@ public class ManageAutoAnswerDao {
 	public static final String TABLE_NAME = "autoanswerlist";
 	public static final String COLUMN_ID = "id";
 
-	public static final String COLUMN_AUDIO_FILE = "audiofile";
+	public static final String COLUMN_MESSAGE = "message";
 	public static final String COLUMN_DESCRIPTION = "description";
 	public static final String COLUMN_TITLE = "title";
 	
@@ -22,7 +22,7 @@ public class ManageAutoAnswerDao {
 	public static final String TABLE_CREATE = "create table " + TABLE_NAME
 			+ "(" + COLUMN_ID + " integer primary key autoincrement, "
 			+ COLUMN_TITLE+ " text," + COLUMN_DESCRIPTION + " text, "
-			 + COLUMN_AUDIO_FILE + "  text);";
+			 + COLUMN_MESSAGE + "  text);";
 
 	private SQLiteDatabase database;
 	private SQLiteOpenHelper helper;
@@ -33,7 +33,7 @@ public class ManageAutoAnswerDao {
 	}
 
 	public boolean savesAutoAnswer(String title,
-			String descrption, String audioFile) {
+			String descrption, String message) {
 
 		database = helper.getWritableDatabase();
 
@@ -43,7 +43,7 @@ public class ManageAutoAnswerDao {
 				ContentValues contentValues = new ContentValues();
 				contentValues.put(COLUMN_TITLE, title);
 				contentValues.put(COLUMN_DESCRIPTION, descrption);
-				contentValues.put(COLUMN_AUDIO_FILE, audioFile);
+				contentValues.put(COLUMN_MESSAGE, message);
 				
 				long effectedrows = database.insert(TABLE_NAME, null,
 						contentValues);
@@ -84,14 +84,14 @@ public class ManageAutoAnswerDao {
 		}
 		return blockPhoneNumbers;
 	}
-	public boolean update(String previousTitle,String title,String decription,String adudiFile) {
+	public boolean update(String previousTitle,String title,String decription,String message) {
 		Log.d("TAG UPDATE", previousTitle);
 		database = helper.getWritableDatabase();
 
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(COLUMN_TITLE, title);
 		contentValues.put(COLUMN_DESCRIPTION, decription);
-		contentValues.put(COLUMN_AUDIO_FILE, adudiFile);
+		contentValues.put(COLUMN_MESSAGE, message);
 		
 		long effectedrows = database.update(TABLE_NAME, contentValues,
 				COLUMN_TITLE + "=?", new String[] { previousTitle });
@@ -120,7 +120,7 @@ public class ManageAutoAnswerDao {
 
 	}
 	public String[] getListOfAutoAnswer() {
-		String[] blockPhoneNumbers = null;
+		String[] autoAnswerList = null;
 
 		Log.d("CHECK", "" + "FINE");
 		database = helper.getWritableDatabase();
@@ -129,26 +129,29 @@ public class ManageAutoAnswerDao {
 		Log.d("CUSRSOR SIZE", "" + cursor.getCount());
 
 		if (cursor != null && cursor.getCount() > 0) {
-			blockPhoneNumbers = new String[cursor.getCount()];
+			autoAnswerList = new String[cursor.getCount()+1];
 
 			if (cursor.moveToFirst()) {
 				int i = 0;
 				do {
-					blockPhoneNumbers[i] = cursor.getString(1);
-					Log.d("phone number", cursor.getString(3));
+					autoAnswerList[i] = cursor.getString(1);
+					Log.d("Auto Answer: ", cursor.getString(3));
 					i++;
 				} while (cursor.moveToNext());
 			}
 			cursor.close();
 			database.close();
+		} else {
+			autoAnswerList = new String [1];			
 		}
-		return blockPhoneNumbers;
+		autoAnswerList[autoAnswerList.length-1] = "Default";
+		return autoAnswerList;
 	}
 	
-	public String getMsgBody(){
+	public String getMsgBody(String msgId){
 		String msgBody = null;
 		database = helper.getWritableDatabase();
-		Cursor cursor = database.rawQuery("select * from " + TABLE_NAME,null);
+		Cursor cursor = database.rawQuery("select * from " + TABLE_NAME + " where " + COLUMN_TITLE + "=?", new String[]{msgId});
 
 		Log.d("CUSRSOR SIZE", "" + cursor.getCount());
 
@@ -162,6 +165,8 @@ public class ManageAutoAnswerDao {
 			}
 			cursor.close();
 			database.close();
+		} else {
+			msgBody = "Sorry I am unable to attend your call. I will try to call you ASAP!";
 		}
 		
 		

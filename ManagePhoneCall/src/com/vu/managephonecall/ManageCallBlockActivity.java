@@ -69,7 +69,10 @@ public class ManageCallBlockActivity extends Activity {
 				// Toast.makeText(getApplicationContext(),
 				// ""+textView.getText().toString(), Toast.LENGTH_LONG).show();
 
-				alert();
+				if (!"No Blocked Numbers".equalsIgnoreCase(textView.getText()
+						.toString())) {
+					alert();
+				}
 
 			}
 		});
@@ -91,7 +94,9 @@ public class ManageCallBlockActivity extends Activity {
 		// Set an EditText view to get user input
 		final EditText input = new EditText(this);
 		if (phoneNumber != null) {
-			input.setText(phoneNumber);
+			if (!"No Blocked Numbers".equalsIgnoreCase(phoneNumber)) {
+				input.setText(phoneNumber);
+			}			
 			phoneNumber = null;
 		}
 		alert.setView(input);
@@ -125,14 +130,27 @@ public class ManageCallBlockActivity extends Activity {
 
 						} else {
 
-							if (manageCallBlockDao.update(input.getText()
-									.toString(), previousValue)) {
-								getlistItems();
+							if (!input.getText().toString().isEmpty()) {
+								if (manageCallBlockDao.update(input.getText()
+										.toString(), previousValue)) {
+									getlistItems();
+									Toast.makeText(getApplicationContext(),
+											"Successfully Updated",
+											Toast.LENGTH_SHORT).show();
+
+								} else {
+									Toast.makeText(getApplicationContext(),
+											"Update Failed", Toast.LENGTH_SHORT)
+											.show();
+
+								}
+							} else {
 								Toast.makeText(getApplicationContext(),
-										"Successfully Updated",
+										"Please enter phone number",
 										Toast.LENGTH_SHORT).show();
 
 							}
+							
 
 						}
 

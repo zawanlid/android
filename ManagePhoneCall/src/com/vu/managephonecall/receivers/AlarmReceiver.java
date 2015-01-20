@@ -44,25 +44,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 		// If you want to hide the notification after it was selected, do the
 		// code below
-		// myNotification.flags |= Notification.FLAG_AUTO_CANCEL;
-
+		mNotification.flags |= Notification.FLAG_AUTO_CANCEL;
 		notificationManager.notify(0, mNotification);
 
-		/*
-		 * Uri soundUri =
-		 * RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-		 * 
-		 * String title ="ScheduleCall"; String subject = "@kk"; String body =
-		 * "call"; NM=(NotificationManager)context.getSystemService(Context.
-		 * NOTIFICATION_SERVICE); Notification notify=new
-		 * Notification(android.R.drawable.
-		 * stat_notify_more,title,System.currentTimeMillis()); PendingIntent
-		 * pending=PendingIntent.getActivity( context
-		 * .getApplicationContext(),0, new Intent(),0);
-		 * notify.setLatestEventInfo
-		 * (context.getApplicationContext(),subject,body,pending); NM.notify(0,
-		 * notify);
-		 */
 
 	}
 
